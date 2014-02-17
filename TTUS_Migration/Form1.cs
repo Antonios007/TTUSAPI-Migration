@@ -20,5 +20,11 @@ namespace TTUS_Migration
         {
             ASG.TTUS_API.ShutDown();
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            //ASG.TTUS_API.CreateExchangeTrader();
+            ASG.TTUS_API.AttachExchangeTrader();
+        }
     }
 }

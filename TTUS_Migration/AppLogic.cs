@@ -8,8 +8,9 @@ namespace TTUS_Migration
     static class AppLogic
     {
         public static string DataDir = "Data";
+        public static int NumberofLimits = -1;
+      
 
 
-        public static int NumberofLimits { get; set; }
     }
 }
