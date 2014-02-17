@@ -23,8 +23,7 @@ namespace TTUS_Migration
 
         private void button1_Click(object sender, EventArgs e)
         {
-            //ASG.TTUS_API.CreateExchangeTrader();
-            ASG.TTUS_API.AttachExchangeTrader();
+            AppLogic.AttachExchangeTrader();
         }
     }
 }

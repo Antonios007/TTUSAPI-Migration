@@ -38,6 +38,7 @@ namespace ASG
         public static Dictionary<int, TTUSAPI.DataObjects.Gateway> m_Gateways;
 
         public static Dictionary<string, TTUSAPI.DataObjects.Currency> m_Currencies;
+        public static Dictionary<int, TTUSAPI.DataObjects.ProductType> m_ProdTypes;
 
         public static Dictionary<int, TTUSAPI.DataObjects.MarketProductCatalog> m_MarketProductCatalogs;
         public static Dictionary<int, TTUSAPI.DataObjects.Market> m_Markets;
@@ -79,7 +80,6 @@ namespace ASG
             m_TTUSAPI.OnCurrencyUpdate += m_TTUSAPI_OnCurrencyUpdate;
             
         }
-
        
         public static void ShutDown()
         {
@@ -132,15 +132,7 @@ namespace ASG
         private static void m_TTUSAPI_OnInitializeComplete(object sender, InitializeCompleteEventArgs e)
         {
             ASG.Utility.DisplayCurrentMethodName();
-            mainform.toolStripStatusLabelAPI.BackColor = System.Drawing.Color.LimeGreen;
-            if (!m_EnvironmentIsMB)
-            {
-                //mainform.button_SBLimits2Disk.Enabled = true;
-            }
-            else
-            {
-               // mainform.button_InsertLimitsToMB.Enabled = true;
-            }
+
 
             Trace.WriteLine(string.Format("AccountsDownloadCount: {0}", e.AccountsDownloadCount));
             Trace.WriteLine(string.Format("FixServersDownloadCount: {0}", e.FixServersDownloadCount));
@@ -155,98 +147,11 @@ namespace ASG
         #endregion
 
         #region TTUSAPI Data updates
-        static void m_TTUSAPI_OnUserUpdate(object sender, UserUpdateEventArgs e)
-        {
-            ASG.Utility.DisplayCurrentMethodName();
-            try
-            {
-                Trace.WriteLine("There were " + e.Users.Count + " Users downloaded:");
-                //Populate dictionary with downloaded users
-                if (e.Type == UpdateType.Download)
-                {
-                    m_Users = e.Users;
-                }
-                //Update dictionary with any user updates
-                else if (e.Type == UpdateType.Added || e.Type == UpdateType.Changed || e.Type == UpdateType.Relationship)
-                {
-                    foreach (KeyValuePair<string, TTUSAPI.DataObjects.User> user in e.Users)
-                    {
-                        m_Users[user.Key] = user.Value;
-                    }
-                }
-                //Remove user from dictionary
-                else if (e.Type == UpdateType.Deleted)
-                {
-                    foreach (KeyValuePair<string, TTUSAPI.DataObjects.User> user in e.Users)
-                    {
-                        m_Users.Remove(user.Key);
-                    }
-                }
-            }
-            catch (Exception exception)
-            {
-                Trace.WriteLine("Error:" + exception.Message);
-            }
-
-            //try
-            //{
-            //    // THIS is left in as a reference for what was working while testing
-            //    m_UpdateUser = m_Users["ANTONIOS3"];
-            //    Trace.WriteLine("User: " + m_Users["ANTONIOS3"].UserName );
-            //}
-            //catch (Exception ex)
-            //{
-            //    Trace.WriteLine("User not found");
-            //    Trace.WriteLine(ex.Message ); 
-            //}
-        }
-
-
-
-        static void m_TTUSAPI_OnProductUpdate(object sender, ProductUpdateEventArgs e)
-        {
-            ASG.Utility.DisplayCurrentMethodName();
-            int i = -1;
-            if (e.Type.Equals(UpdateType.Download))
-            {
-                m_MarketProductCatalogs = e.MarketProductCatalogs;
-                Trace.WriteLine("MarketProductCatalogs downloaded");
-                foreach (var item in e.MarketProductCatalogs)
-	            {
-                    Trace.WriteLine(string.Format("{2}GatewayProductCatalogs key: {0} Market:{1}", item.Key, item.Value.Market.MarketName, Environment.NewLine));
-                    foreach (var item2 in item.Value.GatewayProductCatalogs)
-                    {
-                        Trace.WriteLine(string.Format("{3}ProductCatalogs key: {0} GatewayID:{1} Name:{2}", 
-                            item2.Key, item2.Value.Gateway.GatewayID, item2.Value.Gateway.GatewayName, Environment.NewLine ));
-                        foreach (var item3 in item2.Value.ProductCatalogs)
-                        {
-                            Trace.WriteLine(string.Format("{2}key: {0} ProductType:{1}",
-                                item3.Key, item3.Value.ProductType.ProductTypeName, Environment.NewLine));
-                            
-                            foreach (var item4 in item3.Value.Products)
-                            {
-                                if (item4.Value.MarketID!=i)
-                                {
-                                    i = item4.Value.MarketID;
-                                    Trace.WriteLine(string.Format("key: {0} Product:{1} MarketID:{2}", item4.Key, item4.Value.Name, item4.Value.MarketID));
-                                }
-                                else
-                                { Trace.Write("."); }
-                            }
-                            Trace.WriteLine(".");
-                        }
-                    }
-	            }
-            }
-        }
 
         static void m_TTUSAPI_OnProductTypesDownload(object sender, ProductTypeDownloadEventArgs e)
         {
             ASG.Utility.DisplayCurrentMethodName();
-            //foreach (TTUSAPI.DataObjects.ProductType pt in e.ProductTypes.Values)
-            //{
-            //    Trace.WriteLine(string.Format("{0} : {1}",pt.ProductTypeID, pt.ProductTypeName));
-            //}
+            m_ProdTypes = e.ProductTypes;
         }
 
         static void m_TTUSAPI_OnMarketsDownload(object sender, MarketDownloadEventArgs e)
@@ -256,6 +161,7 @@ namespace ASG
             m_Markets = e.Markets;
         }
 
+        // update global data in current application
         static void m_TTUSAPI_OnCurrencyUpdate(object sender, CurrencyUpdateEventArgs e)
         {
             ASG.Utility.DisplayCurrentMethodName();
@@ -272,38 +178,52 @@ namespace ASG
         {
             ASG.Utility.DisplayCurrentMethodName();
             handleUpdateCallback(ref m_GatewayLogins, e.GatewayLogins, e.Type);
+        }
 
-            try
+        static void m_TTUSAPI_OnUserUpdate(object sender, UserUpdateEventArgs e)
+        {
+            ASG.Utility.DisplayCurrentMethodName();
+            handleUpdateCallback(ref m_Users, e.Users, e.Type);
+        }
+
+        // update market catalogs
+        static void m_TTUSAPI_OnProductUpdate(object sender, ProductUpdateEventArgs e)
+        {
+            ASG.Utility.DisplayCurrentMethodName();
+            int i = -1;
+            if (e.Type.Equals(UpdateType.Download))
             {
-                if (e.Type == UpdateType.Download)
+                m_MarketProductCatalogs = e.MarketProductCatalogs;
+                Trace.WriteLine("MarketProductCatalogs downloaded");
+                foreach (var item in e.MarketProductCatalogs)
                 {
-                    Trace.WriteLine("There were " + e.GatewayLogins.Count + " GatewayLogins downloaded:");
-                    m_GatewayLogins = e.GatewayLogins;
-                }
-                //Update dictionary with any user updates
-                else if (e.Type == UpdateType.Added || e.Type == UpdateType.Changed || e.Type == UpdateType.Relationship)
-                {
-                    Trace.WriteLine("There were " + e.GatewayLogins.Count + " GatewayLogins updated:");
-                    foreach (KeyValuePair<string, TTUSAPI.DataObjects.GatewayLogin> user in e.GatewayLogins)
+                    Trace.WriteLine(string.Format("{2}GatewayProductCatalogs key: {0} Market:{1}", item.Key, item.Value.Market.MarketName, Environment.NewLine));
+                    foreach (var item2 in item.Value.GatewayProductCatalogs)
                     {
-                        m_GatewayLogins[user.Key] = user.Value;
+                        Trace.WriteLine(string.Format("{3}ProductCatalogs key: {0} GatewayID:{1} Name:{2}",
+                            item2.Key, item2.Value.Gateway.GatewayID, item2.Value.Gateway.GatewayName, Environment.NewLine));
+                        foreach (var item3 in item2.Value.ProductCatalogs)
+                        {
+                            Trace.WriteLine(string.Format("{2}key: {0} ProductType:{1}",
+                                item3.Key, item3.Value.ProductType.ProductTypeName, Environment.NewLine));
 
-                    }
-                }
-                //Remove user from dictionary
-                else if (e.Type == UpdateType.Deleted)
-                {
-                    Trace.WriteLine("There were " + e.GatewayLogins.Count + " GatewayLogins deleted:");
-                    foreach (KeyValuePair<string, TTUSAPI.DataObjects.GatewayLogin> user in e.GatewayLogins)
-                    {
-                        m_GatewayLogins.Remove(user.Key);
+                            foreach (var item4 in item3.Value.Products)
+                            {
+                                if (item4.Value.MarketID != i)
+                                {
+                                    i = item4.Value.MarketID;
+                                    Trace.WriteLine(string.Format("key: {0} Product:{1} MarketID:{2}", item4.Key, item4.Value.Name, item4.Value.MarketID));
+                                }
+                                else
+                                { Trace.Write("."); }
+                            }
+                            Trace.WriteLine(".");
+                        }
                     }
                 }
             }
-            catch (Exception exception)
-            {
-                Trace.WriteLine("Error:" + exception.Message);
-            }
+            mainform.toolStripStatusLabelAPI.BackColor = System.Drawing.Color.LimeGreen;
+            mainform.button1.Enabled = true;
         }
         #endregion
 
@@ -410,13 +330,6 @@ namespace ASG
         #endregion
 
         #region Utility code
-        public static void ListLimits(Dictionary<string, TTUSAPI.DataObjects.GatewayLoginProductLimit> dict)
-        {
-            foreach (KeyValuePair<string,TTUSAPI.DataObjects.GatewayLoginProductLimit> kvp in dict)
-            {
-                Trace.WriteLine(string.Format("{0} : {1} - {2}",kvp.Key, kvp.Value.ProductKey, kvp.Value.Product));
-            }
-        }
 
         public static int GetGatewayIDbyMarketID(int marketID)
         {
@@ -431,27 +344,20 @@ namespace ASG
 
             return -1;
         }
+
+        public static int GetGatewayIDByname(string name)
+        {
+            foreach (int id in m_Gateways.Keys)
+            {
+                if (m_Gateways[id].GatewayName == name)
+                    return id;
+            }
+            return -1;
+        }
+
         #endregion
 
-        #region Insert GatewayLoginProductLimit
-        static TTUSAPI.DataObjects.GatewayLoginProductLimitProfile test_product()
-        {
-            // THIS code used only for development testing
-            TTUSAPI.DataObjects.GatewayLoginProductLimitProfile plp = new TTUSAPI.DataObjects.GatewayLoginProductLimitProfile();
-
-            plp.AdditionalMarginPercent = 0.00;
-            plp.AllowTradeOut = true;
-            plp.GatewayID = 690; 
-            plp.MaxLongShort = 1000;
-            plp.MaxOrderQty = 1000;
-            plp.MaxPosition = 1000;
-            plp.Product = "6B";
-            //plp.ProductKey is read only
-            plp.ProductTypeID = 1; 
-            plp.SimulationOnly = false;
-
-            return plp;
-        }
+        #region previous app code
 
         public static int success = 0;
         public static int failed = 0;
@@ -579,67 +485,10 @@ namespace ASG
             AppLogic.NumberofLimits = success;
         }
 
-        private static int GetGatewayIDByname(string name)
-        {
-            foreach (int id in m_Gateways.Keys)
-            {
-                if (m_Gateways[id].GatewayName == name)
-                    return id;
-            }
-            return -1;
-        }
-
         #endregion
 
-        public static void CreateExchangeTrader()
-        {
-            TTUSAPI.DataObjects.GatewayCredentialProfile gcp =
-                new TTUSAPI.DataObjects.GatewayCredentialProfile(m_Gateways[GetGatewayIDByname("CME-Q")]);
-            
-            gcp.Member = "TTUSAPI";
-            gcp.Group = "ASG";
-            gcp.Trader = "999";
 
-            TTUSAPI.DataObjects.GatewayLoginProfile glp = new TTUSAPI.DataObjects.GatewayLoginProfile();
-            glp.AddGatewayCredential(gcp);
-            glp.Member = "TTUSAPI";
-            glp.Group = "ASG";
-            glp.Trader = "999";
-            glp.Password = "1234";
-            glp.GatewayLoginRiskSettings.Currency = m_Currencies["USD"];
-            glp.GatewayLoginRiskSettings.TradingAllowed = true;
-         
-
-            ResultStatus r = m_TTUSAPI.AddGatewayLogin(glp);
-            Trace.WriteLine(string.Format("RESULT: {0} [{1}] {2}", r.Result, r.TransactionID, r.ErrorMessage));
-
-        }
-
-        public static void AttachExchangeTrader()
-        {
-            try
-            {
-                TTUSAPI.DataObjects.GatewayLoginProfile glp = 
-                    new TTUSAPI.DataObjects.GatewayLoginProfile(m_GatewayLogins["TTORDSL ASG 003"]);
-
-                TTUSAPI.DataObjects.GatewayCredentialProfile gcp =
-                    new TTUSAPI.DataObjects.GatewayCredentialProfile(
-                        m_GatewayLogins["TTUSAPI ASG 999"].GatewayCredentials["TTUSAPI ASG 999 690"]);
-                
-                Trace.WriteLine(glp.GatewayCredentials.Count);
-                glp.AddGatewayCredential(gcp);
-                Trace.WriteLine(glp.GatewayCredentials.Count);
-
-                ResultStatus r = m_TTUSAPI.UpdateGatewayLogin(glp);
-                Trace.WriteLine(string.Format("RESULT: {0} [{1}] {2}", r.Result, r.TransactionID, r.ErrorMessage));
-                
-            }
-            catch (Exception ex)
-            { Trace.WriteLine(ex.Message); }
-        }
-
-
-        static void handleUpdateCallback<T, U>(ref Dictionary<T, U> globalDictionary, Dictionary<T, U> eventDictionary, UpdateType type)
+        private static void handleUpdateCallback<T, U>(ref Dictionary<T, U> globalDictionary, Dictionary<T, U> eventDictionary, UpdateType type)
         {
             if (type == UpdateType.Download)
             {
