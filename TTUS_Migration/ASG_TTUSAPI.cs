@@ -15,17 +15,16 @@ namespace ASG
 {
     using TTUS_Migration;
 
-    static class TTUS_API
+    static class TTUS
     {
         #region Internal TTUS Data storage
         public static TTUSApi m_TTUSAPI;
         public static string TTUS_User;
         public static string password;
 
-        public static TTUS_Migration.Form1 mainform;
+        public static Form1 mainform;
         public static bool m_EnvironmentIsMB = false ;
 
-        public static string m_Username;
         public static TTUSAPI.DataObjects.GatewayLogin m_UpdateGWLogin;
 
         //this contains all users in the currently connected environment Key = username
@@ -44,8 +43,6 @@ namespace ASG
         public static Dictionary<int, TTUSAPI.DataObjects.Market> m_Markets;
 
         // this data is retreived from single 
-        public static Dictionary<string, TTUSAPI.DataObjects.GatewayLoginProductLimit> m_SBGatewayLoginProductLimits;
-        public static Dictionary<int, TTUSAPI.DataObjects.Gateway> m_GatewaysSingleBroker;
         public static List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile> m_GWRiskLimits = new List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile>();
         public static List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile> m_NAGWRiskLimits = new List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile>();
 
@@ -409,9 +406,9 @@ namespace ASG
                 {
                     Trace.WriteLine(string.Format("key: {0} MGT: {1} {2} {3} gwID:{4}",
                         item2.Key, item2.Value.Member, item2.Value.Group, item2.Value.Trader, item2.Value.GatewayID));
-                    if (m_GatewaysSingleBroker.ContainsKey(item2.Value.GatewayID))
+                    if (m_Gateways.ContainsKey(item2.Value.GatewayID))
                     {
-                        Trace.WriteLine(string.Format("{0}", m_GatewaysSingleBroker[item2.Value.GatewayID].GatewayName));
+                        Trace.WriteLine(string.Format("{0}", m_Gateways[item2.Value.GatewayID].GatewayName));
 
                             member = item2.Value.Member;
                             group = item2.Value.Group;
@@ -435,29 +432,29 @@ namespace ASG
             return true;
         }
         
-        public static void CleanProductLimits()
+        public static void CleanProductLimits(Dictionary<string ,TTUSAPI.DataObjects.GatewayLoginProductLimitProfile > plp_dict)
         {
             ASG.Utility.DisplayCurrentMethodName();
             m_GWRiskLimits.Clear();
 
             string gwName = string.Empty;
-            foreach (var kvp in m_SBGatewayLoginProductLimits)
+            foreach (var kvp in plp_dict)
             {
                 try
                 {
-                    if (SB2MBGWMap.ContainsKey(m_GatewaysSingleBroker[kvp.Value.GatewayID].GatewayName))
+                    if (SB2MBGWMap.ContainsKey(m_Gateways[kvp.Value.GatewayID].GatewayName))
                     {
                         TTUSAPI.DataObjects.GatewayLoginProductLimitProfile plp = new TTUSAPI.DataObjects.GatewayLoginProductLimitProfile(kvp.Value);
-                        plp.GatewayID = GetGatewayIDByname(SB2MBGWMap[m_GatewaysSingleBroker[kvp.Value.GatewayID].GatewayName]);
+                        plp.GatewayID = GetGatewayIDByname(SB2MBGWMap[m_Gateways[kvp.Value.GatewayID].GatewayName]);
                         m_GWRiskLimits.Add(plp);
                         Trace.WriteLine(string.Format("SBGW: {0} MBGW: {1} newID:{2}", 
-                            m_GatewaysSingleBroker[kvp.Value.GatewayID].GatewayName,
-                            SB2MBGWMap[ m_GatewaysSingleBroker[kvp.Value.GatewayID].GatewayName],
+                            m_Gateways[kvp.Value.GatewayID].GatewayName,
+                            SB2MBGWMap[ m_Gateways[kvp.Value.GatewayID].GatewayName],
                             plp.GatewayID ));
                     }
                     else
                     {
-                        Trace.WriteLine(string.Format("SB Gateway {0} not mapped to MB environment", m_GatewaysSingleBroker[kvp.Value.GatewayID].GatewayName));
+                        Trace.WriteLine(string.Format("SB Gateway {0} not mapped to MB environment", m_Gateways[kvp.Value.GatewayID].GatewayName));
                         m_NAGWRiskLimits.Add(new TTUSAPI.DataObjects.GatewayLoginProductLimitProfile(kvp.Value));
                     }
                 }
@@ -473,8 +470,8 @@ namespace ASG
         public static void UploadLimits() 
         {
             ASG.Utility.DisplayCurrentMethodName();
-            TTUS_API.success = 0;
-            TTUS_API.failed = 0;
+            TTUS.success = 0;
+            TTUS.failed = 0;
             foreach (TTUSAPI.DataObjects.GatewayLoginProductLimitProfile plp in m_GWRiskLimits)
             {
                 insertProductLimits(m_UpdateGWLogin, plp);
@@ -486,7 +483,6 @@ namespace ASG
         }
 
         #endregion
-
 
         private static void handleUpdateCallback<T, U>(ref Dictionary<T, U> globalDictionary, Dictionary<T, U> eventDictionary, UpdateType type)
         {

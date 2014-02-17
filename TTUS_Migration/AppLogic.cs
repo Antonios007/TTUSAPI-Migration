@@ -12,28 +12,29 @@ namespace TTUS_Migration
         public static string DataDir = "Data";
         public static int NumberofLimits = -1;
 
-        public static void CreateExchangeTrader()
+        public static ResultStatus CreateExchangeTrader(string gateway, string member, string group, string trader, string password, string currency_key)
         {
             TTUSAPI.DataObjects.GatewayCredentialProfile gcp =
-                new TTUSAPI.DataObjects.GatewayCredentialProfile(ASG.TTUS_API.m_Gateways[ASG.TTUS_API.GetGatewayIDByname("CME-Q")]);
+                new TTUSAPI.DataObjects.GatewayCredentialProfile(ASG.TTUS.m_Gateways[ASG.TTUS.GetGatewayIDByname(gateway)]);
 
-            gcp.Member = "TTUSAPI";
-            gcp.Group = "ASG";
-            gcp.Trader = "999";
+            gcp.Member = member;
+            gcp.Group = group;
+            gcp.Trader = trader;
 
             TTUSAPI.DataObjects.GatewayLoginProfile glp = new TTUSAPI.DataObjects.GatewayLoginProfile();
             glp.AddGatewayCredential(gcp);
-            glp.Member = "TTUSAPI";
-            glp.Group = "ASG";
-            glp.Trader = "999";
-            glp.Password = "1234";
-            glp.GatewayLoginRiskSettings.Currency = ASG.TTUS_API.m_Currencies["USD"];
+
+            glp.Member = member;
+            glp.Group = group;
+            glp.Trader = trader;
+            glp.Password = password;
+            // "USD" = US Dollar currency_key
+            glp.GatewayLoginRiskSettings.Currency = ASG.TTUS.m_Currencies[currency_key];
             glp.GatewayLoginRiskSettings.TradingAllowed = true;
 
-
-            ResultStatus r = ASG.TTUS_API.m_TTUSAPI.AddGatewayLogin(glp);
+            ResultStatus r = ASG.TTUS.m_TTUSAPI.AddGatewayLogin(glp);
             Trace.WriteLine(string.Format("RESULT: {0} [{1}] {2}", r.Result, r.TransactionID, r.ErrorMessage));
-
+            return r;
         }
 
         public static void AttachExchangeTrader()
@@ -41,17 +42,17 @@ namespace TTUS_Migration
             try
             {
                 TTUSAPI.DataObjects.GatewayLoginProfile glp =
-                    new TTUSAPI.DataObjects.GatewayLoginProfile(ASG.TTUS_API.m_GatewayLogins["TTORDSL ASG 003"]);
+                    new TTUSAPI.DataObjects.GatewayLoginProfile(ASG.TTUS.m_GatewayLogins["TTORDSL ASG 003"]);
 
                 TTUSAPI.DataObjects.GatewayCredentialProfile gcp =
                     new TTUSAPI.DataObjects.GatewayCredentialProfile(
-                        ASG.TTUS_API.m_GatewayLogins["TTUSAPI ASG 999"].GatewayCredentials["TTUSAPI ASG 999 690"]);
+                        ASG.TTUS.m_GatewayLogins["TTUSAPI ASG 999"].GatewayCredentials["TTUSAPI ASG 999 690"]);
 
                 Trace.WriteLine(glp.GatewayCredentials.Count);
                 glp.AddGatewayCredential(gcp);
                 Trace.WriteLine(glp.GatewayCredentials.Count);
 
-                ResultStatus r = ASG.TTUS_API.m_TTUSAPI.UpdateGatewayLogin(glp);
+                ResultStatus r = ASG.TTUS.m_TTUSAPI.UpdateGatewayLogin(glp);
                 Trace.WriteLine(string.Format("RESULT: {0} [{1}] {2}", r.Result, r.TransactionID, r.ErrorMessage));
 
             }

@@ -23,7 +23,7 @@ namespace TTUS_Migration
             Application.SetCompatibleTextRenderingDefault(false);
             Form1 f = new Form1();
 
-            ASG.TTUS_API.mainform = f;
+            ASG.TTUS.mainform = f;
 
             if (File.Exists("user.ini"))
             {
@@ -34,11 +34,11 @@ namespace TTUS_Migration
                 Application.Run(new FormLogin());
             }
 
-            ASG.TTUS_API.TTUS_User = user.Keys.ToList<string>()[0];
-            ASG.TTUS_API.password = user.Values.ToList<string>()[0];
+            ASG.TTUS.TTUS_User = user.Keys.ToList<string>()[0];
+            ASG.TTUS.password = user.Values.ToList<string>()[0];
 
-            ASG.TTUS_API.Start();
-            ASG.TTUS_API.SubcribeForCallbacks();
+            ASG.TTUS.Start();
+            ASG.TTUS.SubcribeForCallbacks();
 
             Application.Run(f);
         }

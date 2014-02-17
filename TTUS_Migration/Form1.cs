@@ -18,7 +18,7 @@ namespace TTUS_Migration
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
-            ASG.TTUS_API.ShutDown();
+            ASG.TTUS.ShutDown();
         }
 
         private void button1_Click(object sender, EventArgs e)
