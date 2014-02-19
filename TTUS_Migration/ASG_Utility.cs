@@ -91,5 +91,10 @@ namespace ASG
             Console.ResetColor();
         }
 
+        public static void ReadDataTableFromFile(string fn)
+        { 
+        
+        }
+
     }
 }

@@ -23,7 +23,7 @@ namespace TTUS_Migration
 
         private void button1_Click(object sender, EventArgs e)
         {
-            AppLogic.AttachExchangeTrader();
+           
         }
     }
 }
