@@ -10,7 +10,12 @@ namespace TTUS_Migration
     static class AppLogic
     {
         public static string DataDir = "Data";
-        public static int NumberofLimits = -1;
+
+        public static TTUSAPI.DataObjects.GatewayLogin m_UpdateGWLogin;
+        public static Dictionary<string, TTUSAPI.DataObjects.GatewayLoginProductLimit> m_GatewayLoginProductLimits;
+        public static List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile> m_GWRiskLimits = new List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile>();
+        //populated through config file.
+        public static List<string> Gateways2Consolidate = new List<string>();
 
         public static bool CreateExchangeTrader(string gateway, string member, string group, string trader, string password, string currency_key)
         {
@@ -75,7 +80,7 @@ namespace TTUS_Migration
             { Trace.WriteLine(ex.Message); }
         }
 
-        public static void CopyProductLimits(string username, TTUSAPI.DataObjects.Gateway gw1, TTUSAPI.DataObjects.Gateway gw2)
+        public static void CopyProductLimits(string username)
         { 
 
             

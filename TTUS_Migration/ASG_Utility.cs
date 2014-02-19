@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Diagnostics;
+using System.Runtime.Serialization;
+using System.Xml;
 
 namespace ASG
 {
@@ -45,8 +47,9 @@ namespace ASG
 
         }
 
-        public static void ReadDictFromFile(string fn, ref Dictionary<string, string> datastore)
+        public static void ReadDictFromFile(string fn, char separator, ref Dictionary<string, string> datastore)
         {
+            // ',' = separator for CSV
 
             //Make sure the input file is there
             if (!File.Exists(fn))
@@ -67,15 +70,15 @@ namespace ASG
                     {
                         try  //Store file info in the updateObject dictionary
                         {
-                            string[] dataRow = line.Split(',');  //Expecting comma delineated input                
+                            string[] dataRow = line.Split(separator);                 
                             datastore.Add(dataRow[0].Trim(), dataRow[1].Trim());
-                            log.WriteLine(string.Format("{0} : {1}", dataRow[0].Trim(), dataRow[1].Trim()));
+                            Trace.WriteLine(string.Format("{0} : {1}", dataRow[0].Trim(), dataRow[1].Trim()));
                         }
                         catch (Exception e)  //Exception reading file, likely it is not in the expected format
                         {
-                            log.WriteLine("Exception reading file: " + e.Message);
-                            log.WriteLine("File " + fn + " not in the correct format.  Correct format is:");
-                            log.WriteLine("data,data");
+                            Trace.WriteLine("Exception reading file: " + e.Message);
+                            Trace.WriteLine("File " + fn + " not in the correct format.  Correct format is:");
+                            Trace.WriteLine("data" + separator + "data");
                         }
                     }
                 }
@@ -96,5 +99,43 @@ namespace ASG
         
         }
 
+        public static void CaptureDictionaryToDisk<T, U>(Dictionary<T, U> dict, string fn, string d)
+        {
+            ASG.Utility.DisplayCurrentMethodName();
+
+            if (ASG.Utility.VerifyDirectory(d))
+            {
+                //http://msdn.microsoft.com/en-us/library/system.runtime.serialization.datacontractserializer.aspx
+                DataContractSerializer dcs = new DataContractSerializer(typeof(Dictionary<T, U>));
+                FileStream writer = new FileStream(d + "\\" + fn + ".XML", FileMode.Create);
+                dcs.WriteObject(writer, dict);
+                writer.Close();
+            }
+        }
+
+        public static Dictionary<T, U> RetreiveDictionaryFromDisk<T, U>(string filename, string d)
+        {
+            if (ASG.Utility.VerifyDirectory(d))
+            {
+                FileStream fs = new FileStream(d + "\\" + filename, FileMode.Open);
+                Trace.WriteLine(string.Format("Deserializing {0}", fs.Name));
+                XmlDictionaryReader reader =
+                    XmlDictionaryReader.CreateTextReader(fs, new XmlDictionaryReaderQuotas());
+                DataContractSerializer ser = new DataContractSerializer(typeof(Dictionary<T, U>));
+
+                // Deserialize the data and read it from the instance.
+                Dictionary<T, U> deserialized = (Dictionary<T, U>)ser.ReadObject(reader, true);
+                reader.Close();
+                fs.Close();
+                Trace.WriteLine(string.Format("Deserialized {0} entries", deserialized.Count));
+
+                return deserialized;
+            }
+            else
+            {
+                Trace.WriteLine("Data Export directory is not found");
+                return new Dictionary<T, U>();
+            }
+        }
     }
 }

@@ -23,7 +23,21 @@ namespace TTUS_Migration
 
         private void button1_Click(object sender, EventArgs e)
         {
-           
+            if (ASG.TTUS.GetGWLoginFromUsername("ANTONIOS3", ASG.TTUS.m_Users, ref AppLogic.m_UpdateGWLogin))
+            {
+                // TODO verify that this logic will work
+                AppLogic.m_GatewayLoginProductLimits = AppLogic.m_UpdateGWLogin.ProductLimits;
+                ASG.TTUS.CleanProductLimits(
+                    AppLogic.m_GatewayLoginProductLimits, 
+                    "CME-H", 
+                    ref AppLogic.m_GWRiskLimits, 
+                    ref AppLogic.Gateways2Consolidate);
+
+                ASG.TTUS.UploadLimits(AppLogic.m_GWRiskLimits, AppLogic.m_UpdateGWLogin);
+
+
+            }
+
         }
     }
 }

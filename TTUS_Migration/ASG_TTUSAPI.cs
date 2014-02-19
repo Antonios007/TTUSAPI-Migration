@@ -216,108 +216,6 @@ namespace ASG
         }
         #endregion
 
-        #region Data To-From Disk
-
-        public static void MapGateways(string fn)
-        {
-            Utility.ReadDictFromFile(fn, ref SB2MBGWMap);
-        }
-
-        public static void CaptureLimitsToDisk(Dictionary<string, TTUSAPI.DataObjects.GatewayLoginProductLimit> limits, string fn)
-        {
-            ASG.Utility.DisplayCurrentMethodName();
-            AppLogic.NumberofLimits = limits.Count; 
-
-            string d = AppLogic.DataDir ;
-
-            if (Utility.VerifyDirectory(d))
-            {
-                //http://msdn.microsoft.com/en-us/library/system.runtime.serialization.datacontractserializer.aspx
-                DataContractSerializer dcs = new DataContractSerializer( typeof(Dictionary<string, TTUSAPI.DataObjects.GatewayLoginProductLimit>));
-                FileStream writer = new FileStream(d + "\\" + fn + ".XML", FileMode.Create);
-                dcs.WriteObject(writer, limits);
-                writer.Close();
-            }
-        }
-        
-        public static void CaptureGatewaysToDisk(Dictionary<int, TTUSAPI.DataObjects.Gateway> gws, string fn)
-        {
-            ASG.Utility.DisplayCurrentMethodName();
-            string d = AppLogic.DataDir + "\\gateways";
-
-            if (Utility.VerifyDirectory(d))
-            {
-                //http://msdn.microsoft.com/en-us/library/system.runtime.serialization.datacontractserializer.aspx
-                DataContractSerializer dcs = new DataContractSerializer(typeof(Dictionary<int, TTUSAPI.DataObjects.Gateway>));
-                FileStream writer = new FileStream(d + "\\" + fn + ".XML", FileMode.Create);
-                dcs.WriteObject(writer, gws);
-                writer.Close();
-            }
-        }
-
-        public static Dictionary<string, TTUSAPI.DataObjects.GatewayLoginProductLimit> RetreiveLimitsFromDisk(string filename)
-        {
-            try
-            {
-                FileStream fs = new FileStream(filename, FileMode.Open);
-                Trace.WriteLine(string.Format("Deserializing {0}", fs.Name));
-                XmlDictionaryReader reader =
-                    XmlDictionaryReader.CreateTextReader(fs, new XmlDictionaryReaderQuotas());
-                DataContractSerializer ser = new DataContractSerializer(typeof(Dictionary<string, TTUSAPI.DataObjects.GatewayLoginProductLimit>));
-
-                // Deserialize the data and read it from the instance.
-                Dictionary<string, TTUSAPI.DataObjects.GatewayLoginProductLimit> deserializedGWProdLimits =
-                    (Dictionary<string, TTUSAPI.DataObjects.GatewayLoginProductLimit>)ser.ReadObject(reader, true);
-                reader.Close();
-                fs.Close();
-                Trace.WriteLine(string.Format("Deserialized {0} limits", deserializedGWProdLimits.Count));
-                //Console.WriteLine(String.Format("{0} {1}, ID: {2}",
-                //deserializedPerson.FirstName, deserializedPerson.LastName,
-                //deserializedPerson.ID));
-
-                return deserializedGWProdLimits;
-            }
-            catch (Exception ex)
-            {
-                Trace.WriteLine(ex.Message);
-                return new Dictionary<string, TTUSAPI.DataObjects.GatewayLoginProductLimit>(); 
-            }
-        }
-
-        public static Dictionary<int, TTUSAPI.DataObjects.Gateway> RetreiveSBGWFromDisk(string filename)
-        {
-            string d = AppLogic.DataDir + "\\gateways"; 
-
-            if (Utility.VerifyDirectory(d))
-            {
-                FileStream fs = new FileStream(d + "\\" + filename, FileMode.Open);
-                Trace.WriteLine(string.Format("Deserializing {0}", fs.Name));
-                XmlDictionaryReader reader =
-                    XmlDictionaryReader.CreateTextReader(fs, new XmlDictionaryReaderQuotas());
-                DataContractSerializer ser = new DataContractSerializer(typeof(Dictionary<int, TTUSAPI.DataObjects.Gateway>));
-
-                // Deserialize the data and read it from the instance.
-                Dictionary<int, TTUSAPI.DataObjects.Gateway> deserializedGWList =
-                    (Dictionary<int, TTUSAPI.DataObjects.Gateway>)ser.ReadObject(reader, true);
-                reader.Close();
-                fs.Close();
-                Trace.WriteLine(string.Format("Deserialized {0} SBGW entries", deserializedGWList.Count));
-                //Console.WriteLine(String.Format("{0} {1}, ID: {2}",
-                //deserializedPerson.FirstName, deserializedPerson.LastName,
-                //deserializedPerson.ID));
-
-                return deserializedGWList;
-            }
-            else
-            {
-                Trace.WriteLine("Data Export directory is not found");
-                return new Dictionary<int, TTUSAPI.DataObjects.Gateway>();
-            }
-        }
-
-
-        #endregion
-
         #region Utility code
 
         public static int GetGatewayIDByName(string name)
@@ -330,61 +228,62 @@ namespace ASG
             return -1;
         }
 
-        public static bool GetGWLoginFromUsername(string user)
+        public static bool GetGWLoginFromUsername(string user, 
+            Dictionary<string, TTUSAPI.DataObjects.User> user_dict,
+            ref TTUSAPI.DataObjects.GatewayLogin gw_login)
         {
             ASG.Utility.DisplayCurrentMethodName();
 
             TTUSAPI.DataObjects.User u;
-            try
+            if (user_dict.ContainsKey(user))
             {
-                u = m_Users[user];
+                u = user_dict[user];
                 Trace.WriteLine(string.Format("User found: {0}", u.UserName));
-            }
-            catch (Exception ex)
-            {
-                Trace.WriteLine(ex.Message);
-                return false;
-            }
 
-            TTUSAPI.DataObjects.UserProfile up = new TTUSAPI.DataObjects.UserProfile(u);
+                TTUSAPI.DataObjects.UserProfile up = new TTUSAPI.DataObjects.UserProfile(u);
 
-            Dictionary<string, TTUSAPI.DataObjects.UserGatewayLogin> ugls = up.UserGatewayLogins;
-            string member = string.Empty;
-            string group = string.Empty;
-            string trader = string.Empty;
-            int id = -1;
+                Dictionary<string, TTUSAPI.DataObjects.UserGatewayLogin> ugls = up.UserGatewayLogins;
+                Trace.WriteLine(string.Format("{0} gateway logins", ugls.Count));
 
-            foreach (var item in ugls)
-            {
-                //Trace.WriteLine(string.Format("", item.Key, item.Value.GatewayLoginName, item.Value.UserGatewayCredentials.Count));
-                foreach (var item2 in item.Value.UserGatewayCredentials)
+                string member = string.Empty;
+                string group = string.Empty;
+                string trader = string.Empty;
+                int id = -1;
+
+
+                foreach (var item in ugls)
                 {
-                    Trace.WriteLine(string.Format("key: {0} MGT: {1} {2} {3} gwID:{4}",
-                        item2.Key, item2.Value.Member, item2.Value.Group, item2.Value.Trader, item2.Value.GatewayID));
-                    if (m_Gateways.ContainsKey(item2.Value.GatewayID))
+                    Trace.WriteLine(string.Format("key: {0} name:{1} Creds:{2}", item.Key, item.Value.GatewayLoginName, item.Value.UserGatewayCredentials.Count));
+                    foreach (var item2 in item.Value.UserGatewayCredentials)
                     {
-                        Trace.WriteLine(string.Format("{0}", m_Gateways[item2.Value.GatewayID].GatewayName));
+                        Trace.WriteLine(string.Format("key: {0} MGT: {1} {2} {3} gwID:{4}",
+                            item2.Key, item2.Value.Member, item2.Value.Group, item2.Value.Trader, item2.Value.GatewayID));
+                        if (m_Gateways.ContainsKey(item2.Value.GatewayID))
+                        {
+                            Trace.WriteLine(string.Format("{0}", m_Gateways[item2.Value.GatewayID].GatewayName));
 
-                        member = item2.Value.Member;
-                        group = item2.Value.Group;
-                        trader = item2.Value.Trader;
-                        id = item2.Value.GatewayID;
+                            member = item2.Value.Member;
+                            group = item2.Value.Group;
+                            trader = item2.Value.Trader;
+                            id = item2.Value.GatewayID;
+                        }
                     }
                 }
-            }
 
-            try
-            {
-                string MGT = string.Format("{0} {1} {2}", member, group, trader);
-                m_UpdateGWLogin = m_GatewayLogins[MGT];
-                Trace.WriteLine(string.Format("m_UpdateGWLogin updated with {0}", MGT));
+                try
+                {
+                    string MGT = string.Format("{0} {1} {2}", member, group, trader);
+                    gw_login = m_GatewayLogins[MGT];
+                    Trace.WriteLine(string.Format("Gateway Login updated with {0}", MGT));
+                }
+                catch (Exception ex)
+                {
+                    Trace.WriteLine(ex.Message);
+                    return false;
+                }
+                return true;
             }
-            catch (Exception ex)
-            {
-                Trace.WriteLine(ex.Message);
-                return false;
-            }
-            return true;
+            else { return false; }
         }
 
         #endregion
@@ -419,17 +318,8 @@ namespace ASG
             }
         }
 
-        #region previous app code
-
-
-        public static TTUSAPI.DataObjects.GatewayLogin m_UpdateGWLogin;
-        // this data is retreived from files
-        public static List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile> m_GWRiskLimits = new List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile>();
-        public static List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile> m_NAGWRiskLimits = new List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile>();
-
-        //populated through config file.
-        public static Dictionary<string, string> SB2MBGWMap = new Dictionary<string, string>();
-
+        #region app code
+        
         public static int success = 0;
         public static int failed = 0;
         public static void insertProductLimits(TTUSAPI.DataObjects.GatewayLogin gwl, TTUSAPI.DataObjects.GatewayLoginProductLimitProfile plp)
@@ -451,30 +341,34 @@ namespace ASG
 
 
 
-        public static void CleanProductLimits(Dictionary<string, TTUSAPI.DataObjects.GatewayLoginProductLimitProfile> plp_dict)
+        public static void CleanProductLimits(
+            Dictionary<string, TTUSAPI.DataObjects.GatewayLoginProductLimit> pl_dict,
+            string new_gateway,
+            ref List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile> limits2copy,
+            ref List<string> gw_list) 
         {
             ASG.Utility.DisplayCurrentMethodName();
-            m_GWRiskLimits.Clear();
+            limits2copy.Clear();
 
             string gwName = string.Empty;
-            foreach (var kvp in plp_dict)
+            foreach (var kvp in pl_dict)
             {
                 try
                 {
-                    if (SB2MBGWMap.ContainsKey(m_Gateways[kvp.Value.GatewayID].GatewayName))
+                    if (gw_list.Contains(m_Gateways[kvp.Value.GatewayID].GatewayName))
                     {
                         TTUSAPI.DataObjects.GatewayLoginProductLimitProfile plp = new TTUSAPI.DataObjects.GatewayLoginProductLimitProfile(kvp.Value);
-                        plp.GatewayID = GetGatewayIDByName(SB2MBGWMap[m_Gateways[kvp.Value.GatewayID].GatewayName]);
-                        m_GWRiskLimits.Add(plp);
-                        Trace.WriteLine(string.Format("SBGW: {0} MBGW: {1} newID:{2}",
+                        plp.GatewayID = GetGatewayIDByName(new_gateway);
+                        limits2copy.Add(plp);
+                        
+                        Trace.WriteLine(string.Format("GW1: {0} GW2: {1} newID:{2}",
                             m_Gateways[kvp.Value.GatewayID].GatewayName,
-                            SB2MBGWMap[m_Gateways[kvp.Value.GatewayID].GatewayName],
+                            new_gateway,
                             plp.GatewayID));
                     }
                     else
                     {
-                        Trace.WriteLine(string.Format("SB Gateway {0} not mapped to MB environment", m_Gateways[kvp.Value.GatewayID].GatewayName));
-                        m_NAGWRiskLimits.Add(new TTUSAPI.DataObjects.GatewayLoginProductLimitProfile(kvp.Value));
+                        Trace.WriteLine(string.Format("Gateway {0} not to be consolidated", m_Gateways[kvp.Value.GatewayID].GatewayName));
                     }
                 }
                 catch (Exception e)
@@ -482,23 +376,24 @@ namespace ASG
                     Trace.WriteLine(string.Format("{0}", e.Message));
                 }
             }
-            Trace.WriteLine(string.Format("{0} limits to add", m_GWRiskLimits.Count));
-            Trace.WriteLine(string.Format("{0} limits from unavailable markets", m_NAGWRiskLimits.Count));
+            Trace.WriteLine(string.Format("{0} limits to add", limits2copy.Count));
         }
 
-        public static void UploadLimits()
+        public static void UploadLimits(
+            List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile> limits,
+            TTUSAPI.DataObjects.GatewayLogin gwlogin)
         {
             ASG.Utility.DisplayCurrentMethodName();
             TTUS.success = 0;
             TTUS.failed = 0;
-            foreach (TTUSAPI.DataObjects.GatewayLoginProductLimitProfile plp in m_GWRiskLimits)
+            foreach (TTUSAPI.DataObjects.GatewayLoginProductLimitProfile plp in limits)
             {
-                insertProductLimits(m_UpdateGWLogin, plp);
+                insertProductLimits(gwlogin, plp);
             }
             Trace.WriteLine(string.Format("{0} Limits sent to server", success));
             Trace.WriteLine(string.Format("{0} Limits failed", failed));
             Trace.WriteLine(string.Format("{0} total processed", failed + success));
-            AppLogic.NumberofLimits = success;
+
         }
 
         #endregion

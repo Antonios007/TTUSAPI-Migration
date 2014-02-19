@@ -27,7 +27,7 @@ namespace TTUS_Migration
 
             if (File.Exists("user.ini"))
             {
-                ASG.Utility.ReadDictFromFile("user.ini", ref user);
+                ASG.Utility.ReadDictFromFile("user.ini", ',', ref user);
             }
             else
             {
