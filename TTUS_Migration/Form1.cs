@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace TTUS_Migration
 {
@@ -23,20 +24,32 @@ namespace TTUS_Migration
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (ASG.TTUS.GetGWLoginFromUsername("ANTONIOS3", ASG.TTUS.m_Users, ref AppLogic.m_UpdateGWLogin))
+
+            //int gwid = ASG.TTUS.GetGatewayIDByName("CME-H");
+            //MessageBox.Show(gwid.ToString());
+            try
             {
-                // TODO verify that this logic will work
-                AppLogic.m_GatewayLoginProductLimits = AppLogic.m_UpdateGWLogin.ProductLimits;
-                ASG.TTUS.CleanProductLimits(
-                    AppLogic.m_GatewayLoginProductLimits, 
-                    "CME-H", 
-                    ref AppLogic.m_GWRiskLimits, 
-                    ref AppLogic.Gateways2Consolidate);
+                //ASG.Utility.ReadListFromFile("consolidate.ini", ref AppLogic.Gateways2Consolidate);
+                //must be done separately to ensure updates processed before proceeding
+                AppLogic.CreateExchangeTrader("CME-H", "TTUSAPI", "ASG", "ANTONIOS", "1234", "USD");
 
-                ASG.TTUS.UploadLimits(AppLogic.m_GWRiskLimits, AppLogic.m_UpdateGWLogin);
+                //TTUSAPI.DataObjects.GatewayLogin gwl = null;
+                //if (ASG.TTUS.GetGWLoginFromUsername("ANTONIOS3", ASG.TTUS.m_Users, ref gwl))
+                //{
+                //    AppLogic.AttachExchangeTrader("CME-H", "TTUSAPI", "ASG", "ANTONIOS", gwl);
+                
+                List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile> m_GWRiskLimits = new List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile>();
+                //    //ASG.TTUS.CleanProductLimits(
+                //    //    gwl.ProductLimits,
+                //    //    "CME-H",
+                //    //    AppLogic.Gateways2Consolidate,
+                //    //    ref m_GWRiskLimits);
 
-
+                //    //ASG.TTUS.UploadLimits(m_GWRiskLimits, gwl);
+                //}
             }
+            catch (Exception ex)
+            { Trace.WriteLine(ex.Message); }
 
         }
     }

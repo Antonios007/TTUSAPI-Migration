@@ -9,22 +9,24 @@ namespace TTUS_Migration
 {
     static class AppLogic
     {
-        public static string DataDir = "Data";
-
-        public static TTUSAPI.DataObjects.GatewayLogin m_UpdateGWLogin;
-        public static Dictionary<string, TTUSAPI.DataObjects.GatewayLoginProductLimit> m_GatewayLoginProductLimits;
-        public static List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile> m_GWRiskLimits = new List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile>();
+        //public static string DataDir = "Data";
+        //public static List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile> m_GWRiskLimits = new List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile>();
+        
         //populated through config file.
         public static List<string> Gateways2Consolidate = new List<string>();
 
-        public static bool CreateExchangeTrader(string gateway, string member, string group, string trader, string password, string currency_key)
+        //must ensure updates processed in callback before attaching
+        public static bool CreateExchangeTrader(string gateway_name, string member, string group, string trader, string password, string currency_key)
         {
-            if (ASG.TTUS.m_Gateways.ContainsKey(ASG.TTUS.GetGatewayIDByName(gateway)))
+            ASG.Utility.DisplayCurrentMethodName();
+            int gateway_id = ASG.TTUS.GetGatewayIDByName(gateway_name);
+
+            if (ASG.TTUS.m_Gateways.ContainsKey(gateway_id))
             {
                 if (ASG.TTUS.m_Currencies.ContainsKey(currency_key))
                 {
                     TTUSAPI.DataObjects.GatewayCredentialProfile gcp =
-                        new TTUSAPI.DataObjects.GatewayCredentialProfile(ASG.TTUS.m_Gateways[ASG.TTUS.GetGatewayIDByName(gateway)]);
+                        new TTUSAPI.DataObjects.GatewayCredentialProfile(ASG.TTUS.m_Gateways[gateway_id]);
 
                     gcp.Member = member;
                     gcp.Group = group;
@@ -61,11 +63,15 @@ namespace TTUS_Migration
 
         public static void AttachExchangeTrader(string gateway, string member, string group, string trader, TTUSAPI.DataObjects.GatewayLogin ttord)
         {
+            ASG.Utility.DisplayCurrentMethodName();
+
             try
             {
                 TTUSAPI.DataObjects.GatewayLoginProfile glp = new TTUSAPI.DataObjects.GatewayLoginProfile(ttord);
 
                 int gwid = ASG.TTUS.GetGatewayIDByName(gateway);
+                Trace.WriteLine(string.Format("GatewayID: {0} Gateway Name:{1}", gwid, gateway));
+
                 TTUSAPI.DataObjects.GatewayCredentialProfile gcp = new TTUSAPI.DataObjects.GatewayCredentialProfile(ASG.TTUS.m_Gateways[gwid]);
                 gcp.GatewayID = gwid;
                 gcp.Member = member;

@@ -243,13 +243,12 @@ namespace ASG
                 TTUSAPI.DataObjects.UserProfile up = new TTUSAPI.DataObjects.UserProfile(u);
 
                 Dictionary<string, TTUSAPI.DataObjects.UserGatewayLogin> ugls = up.UserGatewayLogins;
-                Trace.WriteLine(string.Format("{0} gateway logins", ugls.Count));
+                Trace.WriteLine(string.Format("{0} gateway logins", ugls.Values.Count));
 
                 string member = string.Empty;
                 string group = string.Empty;
                 string trader = string.Empty;
                 int id = -1;
-
 
                 foreach (var item in ugls)
                 {
@@ -281,7 +280,9 @@ namespace ASG
                     Trace.WriteLine(ex.Message);
                     return false;
                 }
-                return true;
+                if (id != -1)
+                { return true; }
+                else { return false; }
             }
             else { return false; }
         }
@@ -302,7 +303,7 @@ namespace ASG
                     if (type == UpdateType.Added || type == UpdateType.Changed || type == UpdateType.Relationship)
                     {
                         globalDictionary[item.Key] = item.Value;
-                        Trace.WriteLine(string.Format("{0} updated.", item.Key));
+                        Trace.WriteLine(string.Format("{0} {1}", item.Key, type.ToString()));
                     }
                     else if (type == UpdateType.Deleted)
                     {
@@ -344,8 +345,8 @@ namespace ASG
         public static void CleanProductLimits(
             Dictionary<string, TTUSAPI.DataObjects.GatewayLoginProductLimit> pl_dict,
             string new_gateway,
-            ref List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile> limits2copy,
-            ref List<string> gw_list) 
+            List<string> gw_list,
+            ref List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile> limits2copy) 
         {
             ASG.Utility.DisplayCurrentMethodName();
             limits2copy.Clear();
@@ -393,7 +394,6 @@ namespace ASG
             Trace.WriteLine(string.Format("{0} Limits sent to server", success));
             Trace.WriteLine(string.Format("{0} Limits failed", failed));
             Trace.WriteLine(string.Format("{0} total processed", failed + success));
-
         }
 
         #endregion

@@ -25,7 +25,6 @@ namespace ASG
 
         #endregion
 
-
         public static bool VerifyDirectory(string dir)
         {
             try
@@ -47,6 +46,46 @@ namespace ASG
 
         }
 
+        //Read a file containing a single entry per line
+        public static void ReadListFromFile(string fn, ref List<string> datastore)
+        {
+            DisplayCurrentMethodName();
+
+            //Make sure the input file is there
+            if (!File.Exists(fn))
+            {
+                Trace.WriteLine("File " + fn + " does not exist in the specified path.");
+            }
+            else
+            {
+                Trace.WriteLine(string.Format("Data File: {0}", fn));
+                datastore.Clear();
+
+                TextReader tr = new StreamReader(fn);
+                string line;
+                //Read the input file and store the info in the dictionary of updateObjects
+                while (tr.Peek() >= 0)
+                {
+                    line = tr.ReadLine();
+                    if (line != "" && !line.StartsWith("#"))  // Ignore blank lines and ones that begin with #
+                    {
+                        try  
+                        {
+                            Trace.WriteLine(line);
+                            datastore.Add(line.Trim());
+                        }
+                        catch (Exception e)  //Exception reading file, likely because it is not in the expected format
+                        {
+                            Trace.WriteLine("Exception reading file: " + e.Message);
+                            Trace.WriteLine("File " + fn + " not in the correct format.  Correct format is to have one item per line");
+                        }
+                    }
+                }
+                Trace.WriteLine(string.Format("{0} lines added to datastore", datastore.Count));
+            }
+        }
+
+        //Read a file containing two items per line separated by 'separator'
         public static void ReadDictFromFile(string fn, char separator, ref Dictionary<string, string> datastore)
         {
             // ',' = separator for CSV
@@ -92,11 +131,6 @@ namespace ASG
             Console.ForegroundColor = ConsoleColor.Green;
             Trace.WriteLine(method.Name);
             Console.ResetColor();
-        }
-
-        public static void ReadDataTableFromFile(string fn)
-        { 
-        
         }
 
         public static void CaptureDictionaryToDisk<T, U>(Dictionary<T, U> dict, string fn, string d)
