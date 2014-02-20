@@ -86,10 +86,5 @@ namespace TTUS_Migration
             { Trace.WriteLine(ex.Message); }
         }
 
-        public static void CopyProductLimits(string username)
-        { 
-
-            
-        }
     }
 }

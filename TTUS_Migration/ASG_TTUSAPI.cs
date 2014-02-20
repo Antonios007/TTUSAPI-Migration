@@ -62,6 +62,7 @@ namespace ASG
         { 
             m_TTUSAPI.OnUserUpdate += m_TTUSAPI_OnUserUpdate;
             m_TTUSAPI.OnGatewayLoginUpdate += m_TTUSAPI_OnGatewayLoginUpdate;
+            m_TTUSAPI.OnGatewayLoginReject += m_TTUSAPI_OnGatewayLoginReject;
             m_TTUSAPI.OnProductUpdate += m_TTUSAPI_OnProductUpdate;
             m_TTUSAPI.OnProductTypesDownload += m_TTUSAPI_OnProductTypesDownload;
             m_TTUSAPI.OnGatewayUpdate += m_TTUSAPI_OnGatewayUpdate;
@@ -169,6 +170,12 @@ namespace ASG
             handleUpdateCallback(ref m_GatewayLogins, e.GatewayLogins, e.Type);
         }
 
+        static void m_TTUSAPI_OnGatewayLoginReject(object sender, GatewayLoginRejectEventArgs e)
+        {
+            Trace.WriteLine(string.Format("ERROR: {0} {1}", e.GatewayLogin.Name, e.RejectMessage));
+            mainform.listBox1.Items.Add(e.RejectMessage);
+        }
+
         static void m_TTUSAPI_OnUserUpdate(object sender, UserUpdateEventArgs e)
         {
             ASG.Utility.DisplayCurrentMethodName();
@@ -213,6 +220,7 @@ namespace ASG
             }
             mainform.toolStripStatusLabelAPI.BackColor = System.Drawing.Color.LimeGreen;
             mainform.button1.Enabled = true;
+            mainform.button_InsertExchangeTraders.Enabled = true;
         }
         #endregion
 

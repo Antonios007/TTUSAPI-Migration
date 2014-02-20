@@ -33,11 +33,12 @@ namespace TTUS_Migration
                 //must be done separately to ensure updates processed before proceeding
                 AppLogic.CreateExchangeTrader("CME-H", "TTUSAPI", "ASG", "ANTONIOS", "1234", "USD");
 
-                //TTUSAPI.DataObjects.GatewayLogin gwl = null;
+                TTUSAPI.DataObjects.GatewayLogin gwl = null;
+
                 //if (ASG.TTUS.GetGWLoginFromUsername("ANTONIOS3", ASG.TTUS.m_Users, ref gwl))
                 //{
                 //    AppLogic.AttachExchangeTrader("CME-H", "TTUSAPI", "ASG", "ANTONIOS", gwl);
-                
+
                 List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile> m_GWRiskLimits = new List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile>();
                 //    //ASG.TTUS.CleanProductLimits(
                 //    //    gwl.ProductLimits,
@@ -51,6 +52,11 @@ namespace TTUS_Migration
             catch (Exception ex)
             { Trace.WriteLine(ex.Message); }
 
+        }
+
+        private void button_InsertExchangeTraders_Click(object sender, EventArgs e)
+        {
+            AppLogic.CreateExchangeTrader("CME-H", "TTUSAPI", "ASG", "ANTONIOS", "1234", "USD");
         }
     }
 }
