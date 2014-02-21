@@ -45,8 +45,6 @@ namespace ASG
 
         public static void Start()
         {
-            
-
             // Create the TTUSAPI object for a console application
             m_TTUSAPI = new TTUSApi(TTUSAPI.TTUSApi.StartupMode.Normal);
 
@@ -173,7 +171,7 @@ namespace ASG
         static void m_TTUSAPI_OnGatewayLoginReject(object sender, GatewayLoginRejectEventArgs e)
         {
             Trace.WriteLine(string.Format("ERROR: {0} {1}", e.GatewayLogin.Name, e.RejectMessage));
-            mainform.listBox1.Items.Add(e.RejectMessage);
+            mainform.listBox_Errors.Items.Add(e.RejectMessage);
         }
 
         static void m_TTUSAPI_OnUserUpdate(object sender, UserUpdateEventArgs e)

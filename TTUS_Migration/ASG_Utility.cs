@@ -6,11 +6,17 @@ using System.IO;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Xml;
+using System.Windows.Forms;
+using System.Data;
 
 namespace ASG
 {
+    
+
     public static class Utility
     {
+        public static ListBox ErrorReport = null;
+
         #region Logging Capability
         public static TextWriterTraceListener log;
 
@@ -55,6 +61,8 @@ namespace ASG
             if (!File.Exists(fn))
             {
                 Trace.WriteLine("File " + fn + " does not exist in the specified path.");
+                if (ErrorReport.IsHandleCreated)
+                    ErrorReport.Items.Add("File " + fn + " does not exist in the specified path.");
             }
             else
             {
@@ -97,7 +105,9 @@ namespace ASG
             }
             else
             {
-                datastore.Clear();
+                Trace.WriteLine(string.Format("Data File: {0}", fn));
+                datastore.Clear(); 
+
                 TextReader tr = new StreamReader(fn);
 
                 string line;
@@ -121,6 +131,7 @@ namespace ASG
                         }
                     }
                 }
+                Trace.WriteLine(string.Format("{0} lines added to datastore", datastore.Count));
             }
         }
 
@@ -170,6 +181,50 @@ namespace ASG
                 Trace.WriteLine("Data Export directory is not found");
                 return new Dictionary<T, U>();
             }
+        }
+
+        public static DataTable ReadCSV(string fn, bool ContainsHeader)
+        {
+            DataTable data = new DataTable("data");
+
+            // Requires a reference to Microsoft.VisualBasic
+            using (Microsoft.VisualBasic.FileIO.TextFieldParser parser = new Microsoft.VisualBasic.FileIO.TextFieldParser(fn))
+            {
+                parser.CommentTokens = new string[] { "#" };
+                parser.SetDelimiters(new string[] { "," });
+                parser.TrimWhiteSpace = true;
+
+                // Skip over header line
+                if (ContainsHeader)
+                parser.ReadLine();
+                    
+                while (!parser.EndOfData)
+                {
+                    string[] fields = parser.ReadFields();
+
+                    if (data.Columns.Count.Equals(0))
+                    {
+                        for (int i = 0; i < fields.Length ; i++)
+                        {
+                            data.Columns.Add(new DataColumn(null, typeof(string)));
+                        }
+                    }
+                    data.Rows.Add(fields);
+                }
+                data.AcceptChanges();
+                Trace.WriteLine(string.Format("{0} rows read from {1}", data.Rows.Count, fn));
+
+                foreach (DataRow dr in data.Rows )
+                {
+                    foreach(string s in dr.ItemArray)
+                    {
+                        Trace.Write(s);
+                        Trace.Write(",");
+                    }
+                    Trace.WriteLine(string.Format(" :: {0} columns", dr.ItemArray.Length));
+                }
+            }
+            return data;
         }
     }
 }

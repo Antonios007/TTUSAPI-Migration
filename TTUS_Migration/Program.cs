@@ -25,9 +25,9 @@ namespace TTUS_Migration
 
             ASG.TTUS.mainform = f;
 
-            if (File.Exists("user.ini"))
+            if (File.Exists("data\\user.ini"))
             {
-                ASG.Utility.ReadDictFromFile("user.ini", ',', ref user);
+                ASG.Utility.ReadDictFromFile("data\\user.ini", ',', ref user);
             }
             else
             {
@@ -40,7 +40,12 @@ namespace TTUS_Migration
             ASG.TTUS.Start();
             ASG.TTUS.SubcribeForCallbacks();
 
+            ASG.Utility.ErrorReport = f.listBox_Errors;
+            ASG.Utility.ReadListFromFile("data\\consolidate.ini", ref AppLogic.Gateways2Consolidate);
+            ASG.Utility.ReadListFromFile("data\\gateways.ini", ref AppLogic.TargetGateways);
+
             Application.Run(f);
+
         }
     }
 }

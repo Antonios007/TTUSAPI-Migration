@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
+using System.Data;
 using TTUSAPI;
 
 namespace TTUS_Migration
@@ -14,9 +15,11 @@ namespace TTUS_Migration
         
         //populated through config file.
         public static List<string> Gateways2Consolidate = new List<string>();
+        public static List<string> TargetGateways = new List<string>();
+        public static DataTable InputData = new DataTable();
 
         //must ensure updates processed in callback before attaching
-        public static bool CreateExchangeTrader(string gateway_name, string member, string group, string trader, string password, string currency_key)
+        public static bool CreateExchangeTrader(string gateway_name, string member, string group, string trader, string currency_key)
         {
             ASG.Utility.DisplayCurrentMethodName();
             int gateway_id = ASG.TTUS.GetGatewayIDByName(gateway_name);
@@ -38,7 +41,7 @@ namespace TTUS_Migration
                     glp.Member = member;
                     glp.Group = group;
                     glp.Trader = trader;
-                    glp.Password = password;
+                    //glp.Password = password;
                     // "USD" = US Dollar currency_key
                     glp.GatewayLoginRiskSettings.Currency = ASG.TTUS.m_Currencies[currency_key];
                     glp.GatewayLoginRiskSettings.TradingAllowed = true;
