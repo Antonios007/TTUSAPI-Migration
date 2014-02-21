@@ -121,7 +121,14 @@ namespace TTUS_Migration
 
         private void button_AttachExchangeTraders_Click(object sender, EventArgs e)
         {
+            AppLogic.AttachAllExchangeTraders();
+            this.button_ConsolidateLimits.Enabled = true;
+            // TODO default settings show up as auto-login and not available to user
+        }
 
+        private void button_ConsolidateLimits_Click(object sender, EventArgs e)
+        {
+            // TODO copy product limits from consolidate list to H&J
         }
     }
 }

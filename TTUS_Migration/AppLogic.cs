@@ -80,7 +80,7 @@ namespace TTUS_Migration
                 gcp.Group = group ;
                 gcp.Trader = trader ;
                 glp.AddGatewayCredential(gcp);
-
+    
                 ResultStatus r = ASG.TTUS.m_TTUSAPI.UpdateGatewayLogin(glp);
                 Trace.WriteLine(string.Format("RESULT: {0} [{1}] {2}", r.Result, r.TransactionID, r.ErrorMessage));
             }
@@ -108,5 +108,29 @@ namespace TTUS_Migration
         
         }
 
+        public static void AttachAllExchangeTraders()
+        {
+            foreach (DataRow dr in InputData.Rows)
+            {
+                //dr[0]  = User 
+                //dr[7]  = Exchange Group
+                //dr[8]  = Exchange Trader
+                //dr[9]  = CME-H Column
+                //dr[10] = CME-J column
+                TTUSAPI.DataObjects.GatewayLogin gwl = null;
+                if (ASG.TTUS.GetGWLoginFromUsername(dr[0].ToString(), ASG.TTUS.m_Users, ref gwl))
+                {
+                    if (dr[9].ToString().Length > 0)
+                    {
+                        AttachExchangeTrader("CME-H", dr[9].ToString(), dr[7].ToString(), dr[8].ToString(), gwl);
+                    }
+
+                    if (dr[10].ToString().Length > 0)
+                    {
+                        AttachExchangeTrader("CME-J", dr[10].ToString(), dr[7].ToString(), dr[8].ToString(), gwl);
+                    }
+                }
+            }
+        }
     }
 }
