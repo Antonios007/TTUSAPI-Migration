@@ -217,8 +217,7 @@ namespace ASG
                 }
             }
             mainform.toolStripStatusLabelAPI.BackColor = System.Drawing.Color.LimeGreen;
-            mainform.button1.Enabled = true;
-            mainform.button_InsertExchangeTraders.Enabled = true;
+
         }
         #endregion
 

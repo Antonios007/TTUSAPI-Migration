@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.IO;
 
 namespace TTUS_Migration
 {
@@ -22,6 +23,47 @@ namespace TTUS_Migration
             ASG.TTUS.ShutDown();
         }
 
+        private void setFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // TODO refactor to utility class
+            Stream myStream = null;
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+
+            //openFileDialog1.InitialDirectory = "c:\\";
+            openFileDialog1.Filter = "csv files (*.csv)|*.csv|All files (*.*)|*.*";
+            openFileDialog1.FilterIndex = 1;
+            openFileDialog1.RestoreDirectory = true;
+
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    if ((myStream = openFileDialog1.OpenFile()) != null)
+                    {
+                        AppLogic.DataFile = openFileDialog1.FileName;
+                        using (myStream)
+                        {
+                            // Insert code to read the stream here.
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
+                }
+            }
+
+            using (StreamWriter writer = File.CreateText("config\\data.ini"))
+            {
+                try
+                {
+                    writer.WriteLine(AppLogic.DataFile);
+                }
+                catch (Exception ex)
+                { Trace.WriteLine(ex.Message); }
+            }
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
 
@@ -35,6 +77,8 @@ namespace TTUS_Migration
                 {
                     AppLogic.AttachExchangeTrader("CME-H", "TTUSAPI", "ASG", "ANTONIOS", gwl);
 
+                   
+                    
                     List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile> m_GWRiskLimits =
                         new List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile>();
 
@@ -53,14 +97,31 @@ namespace TTUS_Migration
 
         }
 
-        private void button_InsertExchangeTraders_Click(object sender, EventArgs e)
-        {
-            AppLogic.CreateExchangeTrader("CME-H", "TTUSAPI", "ASG", "ANTONIOS", "USD");
-        }
+
 
         private void button_ReadConfig_Click(object sender, EventArgs e)
         {
-            AppLogic.InputData = ASG.Utility.ReadCSV("baml.csv", true);
+            if (File.Exists(AppLogic.DataFile ))
+            {
+                AppLogic.InputData = ASG.Utility.ReadCSV(AppLogic.DataFile, true);
+                if (AppLogic.InputData.Rows.Count > 0)
+                {
+                    this.button_InsertExchangeTraders.Enabled = true;
+                }
+            }
+            else
+            { MessageBox.Show(string.Format("{0} file not found",AppLogic.DataFile),"ERROR");}
+        }
+
+        private void button_InsertExchangeTraders_Click(object sender, EventArgs e)
+        {
+            AppLogic.CreateAllExchangeTraders();
+            this.button_AttachExchangeTraders.Enabled = true;
+        }
+
+        private void button_AttachExchangeTraders_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

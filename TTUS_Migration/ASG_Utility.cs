@@ -25,7 +25,7 @@ namespace ASG
             VerifyDirectory("logfiles");
             Trace.AutoFlush = true;
             log = new TextWriterTraceListener(System.IO.File.CreateText("logfiles\\" +
-            Process.GetCurrentProcess().ProcessName + DateTime.Now.ToString("yyMMdd-HHmmss") + ".log"));
+                Process.GetCurrentProcess().ProcessName + DateTime.Now.ToString("yyMMdd-HHmmss") + ".log"));
             Trace.Listeners.Add(log);
         }
 

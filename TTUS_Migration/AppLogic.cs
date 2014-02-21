@@ -10,8 +10,7 @@ namespace TTUS_Migration
 {
     static class AppLogic
     {
-        //public static string DataDir = "Data";
-        //public static List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile> m_GWRiskLimits = new List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile>();
+        public static string DataFile = "test.csv";
         
         //populated through config file.
         public static List<string> Gateways2Consolidate = new List<string>();
@@ -87,6 +86,26 @@ namespace TTUS_Migration
             }
             catch (Exception ex)
             { Trace.WriteLine(ex.Message); }
+        }
+
+        public static void CreateAllExchangeTraders()
+        {
+            foreach (DataRow dr in InputData.Rows)
+            {
+                //dr[9]  = CME-H Column
+                //dr[10] = CME-J column
+
+                if (dr[9].ToString().Length > 0)
+                {
+                    CreateExchangeTrader("CME-H", dr[9].ToString(), dr[7].ToString(), dr[8].ToString(), "USD");
+                }
+
+                if (dr[10].ToString().Length > 0)
+                {
+                    CreateExchangeTrader("CME-J", dr[10].ToString(), dr[7].ToString(), dr[8].ToString(), "USD");
+                }
+            }
+        
         }
 
     }

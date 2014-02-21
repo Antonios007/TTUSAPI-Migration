@@ -31,11 +31,14 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel_Connected = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabelAPI = new System.Windows.Forms.ToolStripStatusLabel();
-            this.button1 = new System.Windows.Forms.Button();
             this.button_InsertExchangeTraders = new System.Windows.Forms.Button();
             this.listBox_Errors = new System.Windows.Forms.ListBox();
             this.button_ReadConfig = new System.Windows.Forms.Button();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.setFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.button_AttachExchangeTraders = new System.Windows.Forms.Button();
             this.statusStrip1.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip1
@@ -71,23 +74,12 @@
             this.toolStripStatusLabelAPI.Size = new System.Drawing.Size(57, 19);
             this.toolStripStatusLabelAPI.Text = "TTUSAPI";
             // 
-            // button1
-            // 
-            this.button1.Enabled = false;
-            this.button1.Location = new System.Drawing.Point(12, 255);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
             // button_InsertExchangeTraders
             // 
             this.button_InsertExchangeTraders.Dock = System.Windows.Forms.DockStyle.Top;
             this.button_InsertExchangeTraders.Enabled = false;
             this.button_InsertExchangeTraders.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_InsertExchangeTraders.Location = new System.Drawing.Point(0, 65);
+            this.button_InsertExchangeTraders.Location = new System.Drawing.Point(0, 89);
             this.button_InsertExchangeTraders.Name = "button_InsertExchangeTraders";
             this.button_InsertExchangeTraders.Size = new System.Drawing.Size(337, 65);
             this.button_InsertExchangeTraders.TabIndex = 2;
@@ -108,7 +100,7 @@
             // 
             this.button_ReadConfig.Dock = System.Windows.Forms.DockStyle.Top;
             this.button_ReadConfig.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_ReadConfig.Location = new System.Drawing.Point(0, 0);
+            this.button_ReadConfig.Location = new System.Drawing.Point(0, 24);
             this.button_ReadConfig.Name = "button_ReadConfig";
             this.button_ReadConfig.Size = new System.Drawing.Size(337, 65);
             this.button_ReadConfig.TabIndex = 4;
@@ -116,21 +108,55 @@
             this.button_ReadConfig.UseVisualStyleBackColor = true;
             this.button_ReadConfig.Click += new System.EventHandler(this.button_ReadConfig_Click);
             // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.setFileToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(337, 24);
+            this.menuStrip1.TabIndex = 5;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // setFileToolStripMenuItem
+            // 
+            this.setFileToolStripMenuItem.Name = "setFileToolStripMenuItem";
+            this.setFileToolStripMenuItem.Size = new System.Drawing.Size(71, 20);
+            this.setFileToolStripMenuItem.Text = "Select File";
+            this.setFileToolStripMenuItem.Click += new System.EventHandler(this.setFileToolStripMenuItem_Click);
+            // 
+            // button_AttachExchangeTraders
+            // 
+            this.button_AttachExchangeTraders.Dock = System.Windows.Forms.DockStyle.Top;
+            this.button_AttachExchangeTraders.Enabled = false;
+            this.button_AttachExchangeTraders.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button_AttachExchangeTraders.Location = new System.Drawing.Point(0, 154);
+            this.button_AttachExchangeTraders.Name = "button_AttachExchangeTraders";
+            this.button_AttachExchangeTraders.Size = new System.Drawing.Size(337, 65);
+            this.button_AttachExchangeTraders.TabIndex = 6;
+            this.button_AttachExchangeTraders.Text = "Attach Exchange Traders to TTORDs";
+            this.button_AttachExchangeTraders.UseVisualStyleBackColor = true;
+            this.button_AttachExchangeTraders.Click += new System.EventHandler(this.button_AttachExchangeTraders_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(337, 403);
+            this.Controls.Add(this.button_AttachExchangeTraders);
             this.Controls.Add(this.listBox_Errors);
             this.Controls.Add(this.button_InsertExchangeTraders);
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.button_ReadConfig);
+            this.Controls.Add(this.menuStrip1);
+            this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "ASG TTUSAPI Gateway Migration Sample Code";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -141,10 +167,12 @@
         private System.Windows.Forms.StatusStrip statusStrip1;
         public System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel_Connected;
         public System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelAPI;
-        public System.Windows.Forms.Button button1;
         public System.Windows.Forms.Button button_InsertExchangeTraders;
         public System.Windows.Forms.ListBox listBox_Errors;
         public System.Windows.Forms.Button button_ReadConfig;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem setFileToolStripMenuItem;
+        public System.Windows.Forms.Button button_AttachExchangeTraders;
     }
 }
 
