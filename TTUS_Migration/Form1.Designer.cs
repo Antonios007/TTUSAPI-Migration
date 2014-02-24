@@ -80,9 +80,9 @@
             this.button_InsertExchangeTraders.Dock = System.Windows.Forms.DockStyle.Top;
             this.button_InsertExchangeTraders.Enabled = false;
             this.button_InsertExchangeTraders.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_InsertExchangeTraders.Location = new System.Drawing.Point(0, 89);
+            this.button_InsertExchangeTraders.Location = new System.Drawing.Point(0, 74);
             this.button_InsertExchangeTraders.Name = "button_InsertExchangeTraders";
-            this.button_InsertExchangeTraders.Size = new System.Drawing.Size(337, 65);
+            this.button_InsertExchangeTraders.Size = new System.Drawing.Size(337, 50);
             this.button_InsertExchangeTraders.TabIndex = 2;
             this.button_InsertExchangeTraders.Text = "Upload Exchange Traders";
             this.button_InsertExchangeTraders.UseVisualStyleBackColor = true;
@@ -91,10 +91,11 @@
             // button_ReadConfig
             // 
             this.button_ReadConfig.Dock = System.Windows.Forms.DockStyle.Top;
+            this.button_ReadConfig.Enabled = false;
             this.button_ReadConfig.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button_ReadConfig.Location = new System.Drawing.Point(0, 24);
             this.button_ReadConfig.Name = "button_ReadConfig";
-            this.button_ReadConfig.Size = new System.Drawing.Size(337, 65);
+            this.button_ReadConfig.Size = new System.Drawing.Size(337, 50);
             this.button_ReadConfig.TabIndex = 4;
             this.button_ReadConfig.Text = "Read Config File";
             this.button_ReadConfig.UseVisualStyleBackColor = true;
@@ -122,9 +123,9 @@
             this.button_AttachExchangeTraders.Dock = System.Windows.Forms.DockStyle.Top;
             this.button_AttachExchangeTraders.Enabled = false;
             this.button_AttachExchangeTraders.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_AttachExchangeTraders.Location = new System.Drawing.Point(0, 154);
+            this.button_AttachExchangeTraders.Location = new System.Drawing.Point(0, 124);
             this.button_AttachExchangeTraders.Name = "button_AttachExchangeTraders";
-            this.button_AttachExchangeTraders.Size = new System.Drawing.Size(337, 65);
+            this.button_AttachExchangeTraders.Size = new System.Drawing.Size(337, 50);
             this.button_AttachExchangeTraders.TabIndex = 6;
             this.button_AttachExchangeTraders.Text = "Attach Exchange Traders to TTORDs";
             this.button_AttachExchangeTraders.UseVisualStyleBackColor = true;
@@ -142,10 +143,11 @@
             // button_ConsolidateLimits
             // 
             this.button_ConsolidateLimits.Dock = System.Windows.Forms.DockStyle.Top;
+            this.button_ConsolidateLimits.Enabled = false;
             this.button_ConsolidateLimits.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_ConsolidateLimits.Location = new System.Drawing.Point(0, 219);
+            this.button_ConsolidateLimits.Location = new System.Drawing.Point(0, 174);
             this.button_ConsolidateLimits.Name = "button_ConsolidateLimits";
-            this.button_ConsolidateLimits.Size = new System.Drawing.Size(337, 65);
+            this.button_ConsolidateLimits.Size = new System.Drawing.Size(337, 50);
             this.button_ConsolidateLimits.TabIndex = 8;
             this.button_ConsolidateLimits.Text = "Consolidate Product Limits";
             this.button_ConsolidateLimits.UseVisualStyleBackColor = true;

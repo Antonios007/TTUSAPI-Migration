@@ -260,8 +260,8 @@ namespace ASG
                     Trace.WriteLine(string.Format("key: {0} name:{1} Creds:{2}", item.Key, item.Value.GatewayLoginName, item.Value.UserGatewayCredentials.Count));
                     foreach (var item2 in item.Value.UserGatewayCredentials)
                     {
-                        Trace.WriteLine(string.Format("key: {0} MGT: {1} {2} {3} gwID:{4}",
-                            item2.Key, item2.Value.Member, item2.Value.Group, item2.Value.Trader, item2.Value.GatewayID));
+                       // Trace.WriteLine(string.Format("key: {0} MGT: {1} {2} {3} gwID:{4}",
+                       //     item2.Key, item2.Value.Member, item2.Value.Group, item2.Value.Trader, item2.Value.GatewayID));
                         if (m_Gateways.ContainsKey(item2.Value.GatewayID))
                         {
                             Trace.WriteLine(string.Format("{0}", m_Gateways[item2.Value.GatewayID].GatewayName));
@@ -330,7 +330,6 @@ namespace ASG
         public static int failed = 0;
         public static void insertProductLimits(TTUSAPI.DataObjects.GatewayLogin gwl, TTUSAPI.DataObjects.GatewayLoginProductLimitProfile plp)
         {
-
             TTUSAPI.DataObjects.GatewayLoginProfile gwp = new TTUSAPI.DataObjects.GatewayLoginProfile(gwl);
 
             gwp.AddProductLimit(plp);
@@ -342,7 +341,6 @@ namespace ASG
             { success++; }
             else if (r.Result.Equals(ResultType.FailedValidation))
             { failed++; }
-
         }
 
 

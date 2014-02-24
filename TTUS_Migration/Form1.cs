@@ -41,6 +41,7 @@ namespace TTUS_Migration
                     if ((myStream = openFileDialog1.OpenFile()) != null)
                     {
                         AppLogic.DataFile = openFileDialog1.FileName;
+                        this.button_ReadConfig.Enabled = true;
                         using (myStream)
                         {
                             // Insert code to read the stream here.
@@ -64,41 +65,6 @@ namespace TTUS_Migration
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-
-            //int gwid = ASG.TTUS.GetGatewayIDByName("CME-H");
-            //MessageBox.Show(gwid.ToString());
-            try
-            {
-                TTUSAPI.DataObjects.GatewayLogin gwl = null;
-
-                if (ASG.TTUS.GetGWLoginFromUsername("ANTONIOS3", ASG.TTUS.m_Users, ref gwl))
-                {
-                    AppLogic.AttachExchangeTrader("CME-H", "TTUSAPI", "ASG", "ANTONIOS", gwl);
-
-                   
-                    
-                    List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile> m_GWRiskLimits =
-                        new List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile>();
-
-                    ASG.TTUS.CleanProductLimits(
-                        gwl.ProductLimits,
-                        "CME-H",
-                        AppLogic.Gateways2Consolidate,
-                        ref m_GWRiskLimits);
-
-                    ASG.TTUS.UploadLimits(m_GWRiskLimits, gwl);
-                }
-                
-            }
-            catch (Exception ex)
-            { Trace.WriteLine(ex.Message); }
-
-        }
-
-
-
         private void button_ReadConfig_Click(object sender, EventArgs e)
         {
             if (File.Exists(AppLogic.DataFile ))
@@ -107,6 +73,7 @@ namespace TTUS_Migration
                 if (AppLogic.InputData.Rows.Count > 0)
                 {
                     this.button_InsertExchangeTraders.Enabled = true;
+                    this.button_ReadConfig.Enabled = false;
                 }
             }
             else
@@ -116,19 +83,24 @@ namespace TTUS_Migration
         private void button_InsertExchangeTraders_Click(object sender, EventArgs e)
         {
             AppLogic.CreateAllExchangeTraders();
+            this.button_InsertExchangeTraders.Enabled = false;
             this.button_AttachExchangeTraders.Enabled = true;
         }
 
         private void button_AttachExchangeTraders_Click(object sender, EventArgs e)
         {
             AppLogic.AttachAllExchangeTraders();
+            this.button_AttachExchangeTraders.Enabled = false;
             this.button_ConsolidateLimits.Enabled = true;
             // TODO default settings show up as auto-login and not available to user
         }
 
         private void button_ConsolidateLimits_Click(object sender, EventArgs e)
         {
-            // TODO copy product limits from consolidate list to H&J
+            AppLogic.ConsolidateGateways();
+            this.button_ConsolidateLimits.Enabled = false;
         }
+
+
     }
 }

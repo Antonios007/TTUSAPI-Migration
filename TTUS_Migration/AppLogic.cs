@@ -90,6 +90,8 @@ namespace TTUS_Migration
 
         public static void CreateAllExchangeTraders()
         {
+            ASG.Utility.DisplayCurrentMethodName();
+
             foreach (DataRow dr in InputData.Rows)
             {
                 //dr[9]  = CME-H Column
@@ -105,11 +107,11 @@ namespace TTUS_Migration
                     CreateExchangeTrader("CME-J", dr[10].ToString(), dr[7].ToString(), dr[8].ToString(), "USD");
                 }
             }
-        
         }
 
         public static void AttachAllExchangeTraders()
         {
+            ASG.Utility.DisplayCurrentMethodName();
             foreach (DataRow dr in InputData.Rows)
             {
                 //dr[0]  = User 
@@ -129,6 +131,49 @@ namespace TTUS_Migration
                     {
                         AttachExchangeTrader("CME-J", dr[10].ToString(), dr[7].ToString(), dr[8].ToString(), gwl);
                     }
+                }
+            }
+        }
+
+        public static void ConsolidateGateways()
+        {
+            ASG.Utility.DisplayCurrentMethodName();
+
+            string last_user = string.Empty;
+
+            foreach (DataRow dr in InputData.Rows)
+            {
+                //dr[0]  = User 
+                //dr[7]  = Exchange Group
+                //dr[8]  = Exchange Trader
+                //dr[9]  = CME-H Column
+                //dr[10] = CME-J column
+
+                if (!dr[0].ToString().Equals(last_user))
+                {
+                    TTUSAPI.DataObjects.GatewayLogin gwl = null;
+                    if (ASG.TTUS.GetGWLoginFromUsername(dr[0].ToString(), ASG.TTUS.m_Users, ref gwl))
+                    {
+                        List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile> m_GWRiskLimits =
+                            new List<TTUSAPI.DataObjects.GatewayLoginProductLimitProfile>();
+                        Trace.WriteLine("Process CME-H");
+                        ASG.TTUS.CleanProductLimits(
+                             gwl.ProductLimits,
+                             "CME-H",
+                             AppLogic.Gateways2Consolidate,
+                             ref m_GWRiskLimits);
+
+                        ASG.TTUS.UploadLimits(m_GWRiskLimits, gwl);
+                        Trace.WriteLine("Process CME-J");
+                        ASG.TTUS.CleanProductLimits(
+                             gwl.ProductLimits,
+                             "CME-J",
+                             AppLogic.Gateways2Consolidate,
+                             ref m_GWRiskLimits);
+
+                        ASG.TTUS.UploadLimits(m_GWRiskLimits, gwl);
+                    }
+                    last_user = dr[0].ToString();
                 }
             }
         }

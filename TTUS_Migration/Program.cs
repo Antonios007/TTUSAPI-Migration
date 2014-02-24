@@ -35,6 +35,7 @@ namespace TTUS_Migration
                         AppLogic.DataFile = line.Trim();
                     }
                     Trace.WriteLine(string.Format("Data file set to: {0}", AppLogic.DataFile));
+                    f.button_ReadConfig.Enabled = true;
                 }
                 catch (Exception ex)
                 {
@@ -60,6 +61,9 @@ namespace TTUS_Migration
             ASG.Utility.ErrorReport = f.listBox_Errors;
             ASG.Utility.ReadListFromFile("config\\consolidate.ini", ref AppLogic.Gateways2Consolidate);
             ASG.Utility.ReadListFromFile("config\\gateways.ini", ref AppLogic.TargetGateways);
+
+            // TODO remove for prod code
+            f.button_ConsolidateLimits.Enabled = true;
 
             Application.Run(f);
 
