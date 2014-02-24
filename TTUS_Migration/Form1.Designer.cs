@@ -38,6 +38,7 @@
             this.button_AttachExchangeTraders = new System.Windows.Forms.Button();
             this.listBox_Errors = new System.Windows.Forms.ListBox();
             this.button_ConsolidateLimits = new System.Windows.Forms.Button();
+            this.button_DisableConsolidatedGateways = new System.Windows.Forms.Button();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -153,11 +154,25 @@
             this.button_ConsolidateLimits.UseVisualStyleBackColor = true;
             this.button_ConsolidateLimits.Click += new System.EventHandler(this.button_ConsolidateLimits_Click);
             // 
+            // button_DisableConsolidatedGateways
+            // 
+            this.button_DisableConsolidatedGateways.Dock = System.Windows.Forms.DockStyle.Top;
+            this.button_DisableConsolidatedGateways.Enabled = false;
+            this.button_DisableConsolidatedGateways.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button_DisableConsolidatedGateways.Location = new System.Drawing.Point(0, 224);
+            this.button_DisableConsolidatedGateways.Name = "button_DisableConsolidatedGateways";
+            this.button_DisableConsolidatedGateways.Size = new System.Drawing.Size(337, 50);
+            this.button_DisableConsolidatedGateways.TabIndex = 9;
+            this.button_DisableConsolidatedGateways.Text = "Disable Consolidated Gateways";
+            this.button_DisableConsolidatedGateways.UseVisualStyleBackColor = true;
+            this.button_DisableConsolidatedGateways.Click += new System.EventHandler(this.button_DisableConsolidatedGateways_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(337, 437);
+            this.Controls.Add(this.button_DisableConsolidatedGateways);
             this.Controls.Add(this.button_ConsolidateLimits);
             this.Controls.Add(this.listBox_Errors);
             this.Controls.Add(this.button_AttachExchangeTraders);
@@ -190,6 +205,7 @@
         public System.Windows.Forms.Button button_AttachExchangeTraders;
         public System.Windows.Forms.ListBox listBox_Errors;
         public System.Windows.Forms.Button button_ConsolidateLimits;
+        public System.Windows.Forms.Button button_DisableConsolidatedGateways;
     }
 }
 

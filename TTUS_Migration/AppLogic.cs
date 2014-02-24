@@ -78,7 +78,7 @@ namespace TTUS_Migration
                 gcp.GatewayID = gwid;
                 gcp.Member = member;
                 gcp.Group = group ;
-                gcp.Trader = trader ;
+               
                 glp.AddGatewayCredential(gcp);
     
                 ResultStatus r = ASG.TTUS.m_TTUSAPI.UpdateGatewayLogin(glp);
@@ -174,6 +174,58 @@ namespace TTUS_Migration
                         ASG.TTUS.UploadLimits(m_GWRiskLimits, gwl);
                     }
                     last_user = dr[0].ToString();
+                }
+            }
+        }
+
+        public static void SetGatewayAccess()
+        {
+            ASG.Utility.DisplayCurrentMethodName();
+
+            string last_user = string.Empty;
+            Trace.WriteLine(InputData.Rows.Count);
+            foreach (DataRow dr in InputData.Rows)
+            {
+                //dr[0]  = User 
+                //dr[7]  = Exchange Group
+                //dr[8]  = Exchange Trader
+                //dr[9]  = CME-H Column
+                //dr[10] = CME-J column
+                //https://www.tradingtechnologies.com/online-help/TTUS_API/webframe.html#topic8.html
+
+                if (!dr[0].ToString().Equals(last_user))
+                {
+                    if (ASG.TTUS.m_Users.ContainsKey(dr[0].ToString()))
+                    {
+                        TTUSAPI.DataObjects.User u = ASG.TTUS.m_Users[dr[0].ToString()];
+                        TTUSAPI.DataObjects.UserProfile up = new TTUSAPI.DataObjects.UserProfile(u);
+                        Trace.WriteLine(u.UserName);
+
+                        foreach (string key in up.UserGatewayLogins.Keys)
+                        {
+                            Trace.WriteLine(key);
+                            TTUSAPI.DataObjects.UserGatewayLoginProfile UserGWP = new TTUSAPI.DataObjects.UserGatewayLoginProfile(up.UserGatewayLogins[key]);
+                            foreach (string innerKey in up.UserGatewayLogins[key].UserGatewayCredentials.Keys)
+                            {
+                                Trace.WriteLine(innerKey);
+                                TTUSAPI.DataObjects.UserGatewayCredentialProfile ugcp1 = new TTUSAPI.DataObjects.UserGatewayCredentialProfile(up.UserGatewayLogins[key].UserGatewayCredentials[innerKey]);
+                                TTUSAPI.DataObjects.UserGatewayCredentialProfile ugcp2 = new TTUSAPI.DataObjects.UserGatewayCredentialProfile(up.UserGatewayLogins[key].UserGatewayCredentials[innerKey]);
+                               
+                                // TODO test this value to find CME-H and CME-J
+                                Trace.WriteLine(ASG.TTUS.m_Gateways[ugcp1.GatewayID].GatewayName);
+                                ugcp1.Accessibility = TTUSAPI.DataObjects.UserGatewayCredential.AccessibilityMode.NotAvailable;
+                                //ugcp2.Accessibility = TTUSAPI.DataObjects.UserGatewayCredential.AccessibilityMode.AutoLogin;
+                                //ugcp.OperatorID = lookupOperatorID(newUserInformation.UserName, ugcp.GatewayID, ugcp.Trader);
+                                UserGWP.UpdateGateway(ugcp1);
+                                //UserGWP.UpdateGateway(ugcp2);
+                            }
+                            up.UpdateUserGatewayLogin(UserGWP);
+                        }
+
+                        ResultStatus r = ASG.TTUS.m_TTUSAPI.UpdateUser(up);
+                        Trace.WriteLine(string.Format("RESULT: {0} [{1}] {2}", r.Result, r.TransactionID, r.ErrorMessage));
+                        last_user = dr[0].ToString();
+                    }
                 }
             }
         }

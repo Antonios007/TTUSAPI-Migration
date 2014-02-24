@@ -64,6 +64,7 @@ namespace TTUS_Migration
 
             // TODO remove for prod code
             f.button_ConsolidateLimits.Enabled = true;
+            f.button_DisableConsolidatedGateways.Enabled = true;
 
             Application.Run(f);
 

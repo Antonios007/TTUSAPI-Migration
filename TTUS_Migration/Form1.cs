@@ -101,6 +101,12 @@ namespace TTUS_Migration
             this.button_ConsolidateLimits.Enabled = false;
         }
 
+        private void button_DisableConsolidatedGateways_Click(object sender, EventArgs e)
+        {
+            //TODO change this code to  make consolidated gateways unavailable
+            AppLogic.SetGatewayAccess();
+        }
+
 
     }
 }

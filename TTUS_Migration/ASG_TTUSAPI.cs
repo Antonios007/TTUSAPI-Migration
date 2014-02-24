@@ -66,8 +66,11 @@ namespace ASG
             m_TTUSAPI.OnGatewayUpdate += m_TTUSAPI_OnGatewayUpdate;
             m_TTUSAPI.OnMarketsDownload += m_TTUSAPI_OnMarketsDownload;
             m_TTUSAPI.OnCurrencyUpdate += m_TTUSAPI_OnCurrencyUpdate;
+
+            m_TTUSAPI.OnAPIFault += m_TTUSAPI_OnAPIFault;
             
         }
+
        
         public static void ShutDown()
         {
@@ -170,8 +173,10 @@ namespace ASG
 
         static void m_TTUSAPI_OnGatewayLoginReject(object sender, GatewayLoginRejectEventArgs e)
         {
-            Trace.WriteLine(string.Format("ERROR: {0} {1}", e.GatewayLogin.Name, e.RejectMessage));
-            mainform.listBox_Errors.Items.Add(e.RejectMessage);
+            string s = string.Format("ERROR: {0} {1}", e.GatewayLogin.Name, e.RejectMessage);
+            Trace.WriteLine(s);
+            mainform.listBox_Errors.Items.Insert(0, s);
+            //string.Concat(DateTime.Now.ToString("HH:mm:ss.fff"), " : "
         }
 
         static void m_TTUSAPI_OnUserUpdate(object sender, UserUpdateEventArgs e)
@@ -218,6 +223,14 @@ namespace ASG
             }
             mainform.toolStripStatusLabelAPI.BackColor = System.Drawing.Color.LimeGreen;
 
+        }
+
+        static void m_TTUSAPI_OnAPIFault(object sender, APIFaultEventArgs e)
+        {
+            string s = string.Format("OnAPIFault ERROR: {0}", e.ErrorMessage);
+            Trace.WriteLine(s);
+            mainform.listBox_Errors.Items.Insert(0, s);
+            //string.Concat(DateTime.Now.ToString("HH:mm:ss.fff"), " : "
         }
         #endregion
 
